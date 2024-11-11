@@ -25,11 +25,16 @@ struct ContentView: View {
     @State private var questionCount = 5
     
     @State private var playerAnswer = ""
-    @State private var playerScore = 0
+    @State private var score = 0
+    @State private var scoreTitle = ""
+    @State private var scoreMessage = ""
+    
+    @State private var showScore = false
+    @State private var showGameOver = false
     
     var body: some View
     {
-        NavigationStack
+        VStack
         {
             switch(gameState) {
             case GameState.Menu:
@@ -66,9 +71,10 @@ struct ContentView: View {
                     .foregroundColor(Color.white)
                     .cornerRadius(5.0)
                 }
+                
             case GameState.Game:
                 VStack {
-                    Text("Score: \(playerScore)")
+                    Text("Score: \(score)")
                     
                     Spacer()
                     
@@ -99,10 +105,13 @@ struct ContentView: View {
                     Spacer()
                 }
                 .padding()
+                //.opacity(showScore ? 0 : 1)
+                //.animation(.default, value: showScore)
+                
             case GameState.GameOver:
                 VStack {
                     Text("Game Over")
-                    Text("Score: \(playerScore)")
+                    Text("Score: \(score)")
                     Button("Play again?") {
                         restartGame()
                     }
@@ -115,13 +124,23 @@ struct ContentView: View {
                 .padding()
             }
         }
+        .alert(scoreTitle, isPresented: $showScore) {
+            Button("Continue", action: nextQuestion)
+        } message: {
+            Text(scoreMessage)
+        }
+        .alert("Game Over", isPresented: $showGameOver) {
+            Button("Play again?", action: restartGame)
+        } message: {
+            Text("You have scored \(score) out of \(questionCount)")
+        }
     }
     
     
     func resetGame() {
         questionNumber = 0
         playerAnswer = ""
-        playerScore = 0
+        score = 0
     }
     
     func startGame() {
@@ -144,23 +163,32 @@ struct ContentView: View {
     }
     
     func checkAnswer() {
-        let answer = Int(playerAnswer)
+        let answer = Int(playerAnswer) ?? 0
         let questionAnswer = questions[questionNumber].answer
         
         if(answer == questionAnswer) {
-            playerScore += 1
+            score += 1
+            scoreTitle = "Well Done!"
+            scoreMessage = "You answered correctly with \(answer)"
+        }
+        else {
+            scoreTitle = "Almost!"
+            scoreMessage = "The correct answer is \(questionAnswer)"
         }
         
-        nextQuestion()
+        //questionNumber += 1
+        
+        if(questionNumber + 1 < questionCount) {
+            showScore = true
+        }
+        else {
+            showGameOver = true
+        }
     }
     
     func nextQuestion() {
         questionNumber += 1
         playerAnswer = ""
-        
-        if(questionNumber >= questionCount) {
-            gameState = GameState.GameOver
-        }
     }
     
     func restartGame() {
