@@ -68,8 +68,6 @@ struct ContentView: View {
                 }
             case GameState.Game:
                 VStack {
-                    Text("Let's Play")
-                    
                     Text("Score: \(playerScore)")
                     
                     Spacer()
@@ -105,16 +103,30 @@ struct ContentView: View {
                 VStack {
                     Text("Game Over")
                     Text("Score: \(playerScore)")
+                    Button("Play again?") {
+                        restartGame()
+                    }
+                    .padding()
+                    .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+                    .background(Color.blue)
+                    .foregroundColor(Color.white)
+                    .cornerRadius(5.0)
                 }
+                .padding()
             }
         }
     }
     
-    func startGame() {
-        generateQuestions()
+    
+    func resetGame() {
         questionNumber = 0
         playerAnswer = ""
         playerScore = 0
+    }
+    
+    func startGame() {
+        resetGame()
+        generateQuestions()
         gameState = GameState.Game
     }
     
@@ -149,6 +161,11 @@ struct ContentView: View {
         if(questionNumber >= questionCount) {
             gameState = GameState.GameOver
         }
+    }
+    
+    func restartGame() {
+        resetGame()
+        gameState = GameState.Menu
     }
 }
 
