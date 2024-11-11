@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var questionCount = 5
     
     @State private var playerAnswer = ""
+    @State private var playerScore = 0
     
     var body: some View
     {
@@ -69,14 +70,24 @@ struct ContentView: View {
                 VStack {
                     Text("Let's Play")
                     
+                    Text("Score: \(playerScore)")
+                    
+                    Spacer()
+                    
                     Text("Question \(questionNumber + 1)")
                         .font(.headline)
+                    
+                    Spacer()
                     
                     Text("\(questions[questionNumber].text)")
                         .font(.largeTitle)
                     
+                    Spacer()
+                    
                     TextField("Answer", text: $playerAnswer)
                         .keyboardType(.numberPad)
+                    
+                    Spacer()
                     
                     Button("Submit") {
                         checkAnswer()
@@ -86,10 +97,15 @@ struct ContentView: View {
                     .background(Color.blue)
                     .foregroundColor(Color.white)
                     .cornerRadius(5.0)
+                    
+                    Spacer()
                 }
                 .padding()
             case GameState.GameOver:
-                Text("Game Over")
+                VStack {
+                    Text("Game Over")
+                    Text("Score: \(playerScore)")
+                }
             }
         }
     }
@@ -97,6 +113,8 @@ struct ContentView: View {
     func startGame() {
         generateQuestions()
         questionNumber = 0
+        playerAnswer = ""
+        playerScore = 0
         gameState = GameState.Game
     }
     
@@ -114,7 +132,12 @@ struct ContentView: View {
     }
     
     func checkAnswer() {
-        // TODO is answer correct
+        let answer = Int(playerAnswer)
+        let questionAnswer = questions[questionNumber].answer
+        
+        if(answer == questionAnswer) {
+            playerScore += 1
+        }
         
         nextQuestion()
     }
