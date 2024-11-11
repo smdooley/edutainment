@@ -18,11 +18,13 @@ struct ContentView: View {
     
     @State private var gameState: GameState = GameState.Menu
     @State private var isGameActive = false
-    @State private var currentQuestionIndex = 0
+    @State private var questionNumber = 0
     @State private var questions = [Question]()
     
     @State private var timestable = 2
     @State private var questionCount = 5
+    
+    @State private var playerAnswer = ""
     
     var body: some View
     {
@@ -54,8 +56,7 @@ struct ContentView: View {
                         }
                     }
                     
-                    Button("Play")
-                    {
+                    Button("Play") {
                         startGame()
                     }
                     .padding()
@@ -65,16 +66,37 @@ struct ContentView: View {
                     .cornerRadius(5.0)
                 }
             case GameState.Game:
-                Text("Let's Play")
+                VStack {
+                    Text("Let's Play")
+                    
+                    Text("Question \(questionNumber + 1)")
+                        .font(.headline)
+                    
+                    Text("\(questions[questionNumber].text)")
+                        .font(.largeTitle)
+                    
+                    TextField("Answer", text: $playerAnswer)
+                        .keyboardType(.numberPad)
+                    
+                    Button("Submit") {
+                        checkAnswer()
+                    }
+                    .padding()
+                    .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/)
+                    .background(Color.blue)
+                    .foregroundColor(Color.white)
+                    .cornerRadius(5.0)
+                }
+                .padding()
             case GameState.GameOver:
                 Text("Game Over")
             }
         }
     }
     
-    func startGame()
-    {
+    func startGame() {
         generateQuestions()
+        questionNumber = 0
         gameState = GameState.Game
     }
     
@@ -82,12 +104,27 @@ struct ContentView: View {
         questions.removeAll() // Reset the questions array
         
         (0..<questionCount).forEach { _ in
-            let multiplierA = Int.random(in: 2...timestable)
+            let multiplierA = timestable; // Int.random(in: 2...timestable)
             let multiplierB = Int.random(in: 1...12)
             let answer = multiplierA * multiplierB
             let question = Question(text: "\(multiplierA) x \(multiplierB)", answer: answer)
             
             questions.append(question) // Insert the new question into the array
+        }
+    }
+    
+    func checkAnswer() {
+        // TODO is answer correct
+        
+        nextQuestion()
+    }
+    
+    func nextQuestion() {
+        questionNumber += 1
+        playerAnswer = ""
+        
+        if(questionNumber >= questionCount) {
+            gameState = GameState.GameOver
         }
     }
 }
