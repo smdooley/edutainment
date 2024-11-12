@@ -36,6 +36,11 @@ struct ContentView: View {
     {
         VStack
         {
+            Text("Edutainment")
+                .font(.largeTitle.bold())
+            
+            Spacer()
+            
             switch(gameState) {
             case GameState.Menu:
                 Form
@@ -73,10 +78,9 @@ struct ContentView: View {
                 }
                 
             case GameState.Game:
-                VStack {
-                    Text("Score: \(score)")
+                VStack(spacing: 10) {
                     
-                    Spacer()
+                    Text("Score: \(score)")
                     
                     Text("Question \(questionNumber + 1)")
                         .font(.headline)
@@ -85,8 +89,6 @@ struct ContentView: View {
                     
                     Text("\(questions[questionNumber].text)")
                         .font(.largeTitle)
-                    
-                    Spacer()
                     
                     TextField("Answer", text: $playerAnswer)
                         .keyboardType(.numberPad)
@@ -175,8 +177,6 @@ struct ContentView: View {
             scoreTitle = "Almost!"
             scoreMessage = "The correct answer is \(questionAnswer)"
         }
-        
-        //questionNumber += 1
         
         if(questionNumber + 1 < questionCount) {
             showScore = true
